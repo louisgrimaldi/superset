@@ -24,7 +24,9 @@ werkzeug>=3.1.6,<4.0.0
 filelock>=3.20.3,<4.0.0
 # Security: decompression bomb fix (required by aiohttp 3.13.3)
 brotli>=1.2.0,<2.0.0
-numexpr>=2.9.0
+# Cap below the next major to avoid non-reproducible builds and breakage from
+# an unvetted numexpr 3.x release (resolves to 2.10.2, see base.txt).
+numexpr>=2.9.0,<3.0.0
 # Security: CVE-2026-34073 (MEDIUM) - Improper Certificate Validation
 cryptography>=48.0.0,<49.0.0
 # Security: Snyk - XSS vulnerability in Mako templates
