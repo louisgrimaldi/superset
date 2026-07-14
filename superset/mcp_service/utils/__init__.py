@@ -17,7 +17,7 @@
 
 from __future__ import annotations
 
-from superset.mcp_service.utils.sanitization import (
+from superset.mcp_service.utils.sanitization import (  # noqa: F401
     escape_like as escape_like,
     escape_llm_context_delimiters as escape_llm_context_delimiters,
     sanitize_for_llm_context as sanitize_for_llm_context,

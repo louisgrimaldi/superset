@@ -54,8 +54,6 @@ PLAYWRIGHT_INSTALL_MESSAGE = (
 )
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from flask_appbuilder.security.sqla.models import User
 
 try:
@@ -68,8 +66,6 @@ try:
         TimeoutError as PlaywrightTimeout,
     )
 except ImportError:
-    from typing import Any
-
     # Define dummy classes when playwright is not available
     BrowserContext = Any
     PlaywrightError = Exception
