@@ -23,6 +23,8 @@ Create Date: 2018-11-12 13:31:07.578090
 """
 
 # revision identifiers, used by Alembic.
+import logging
+
 from alembic import op
 from sqlalchemy import Column, Integer, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -32,6 +34,8 @@ from superset.utils import json
 
 revision = "4ce8df208545"
 down_revision = "55e910a74826"
+
+logger = logging.getLogger("alembic.env")
 
 Base = declarative_base()
 
@@ -76,8 +80,11 @@ def upgrade():  # noqa: C901
                                 val["__time_range"] = f"{__from} : {__to}"
                         json_metadata["default_filters"] = json.dumps(filters)
                         has_update = True
-                except Exception:  # noqa: S110
-                    pass
+                except Exception:
+                    logger.warning(
+                        "Could not migrate time range for default filters",
+                        exc_info=True,
+                    )
 
             # filter_immune_slice_fields:
             # key: chart id, value: field names that escape from filters

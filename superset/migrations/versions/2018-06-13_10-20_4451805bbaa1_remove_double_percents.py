@@ -27,6 +27,8 @@ revision = "4451805bbaa1"
 down_revision = "bddc498dd179"
 
 
+import logging  # noqa: E402
+
 from alembic import op  # noqa: E402
 from sqlalchemy import (  # noqa: E402
     Column,
@@ -40,6 +42,8 @@ from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
 
 from superset import db  # noqa: E402
 from superset.utils import json  # noqa: E402
+
+logger = logging.getLogger("alembic.env")
 
 Base = declarative_base()
 
@@ -94,8 +98,8 @@ def replace(source, target):
                             )
 
                     slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning("Could not replace double percents for slice", exc_info=True)
 
     session.commit()
     session.close()

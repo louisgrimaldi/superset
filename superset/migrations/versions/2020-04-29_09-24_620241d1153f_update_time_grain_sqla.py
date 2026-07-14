@@ -26,6 +26,8 @@ Create Date: 2020-04-29 09:24:04.952368
 revision = "620241d1153f"
 down_revision = "f9a30386bd74"
 
+import logging  # noqa: E402
+
 from alembic import op  # noqa: E402
 from sqlalchemy import Column, ForeignKey, Integer, Text  # noqa: E402
 from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
@@ -33,6 +35,8 @@ from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
 from superset import db, db_engine_specs  # noqa: E402
 from superset.databases.utils import make_url_safe  # noqa: E402
 from superset.utils import json  # noqa: E402
+
+logger = logging.getLogger("alembic.env")
 
 Base = declarative_base()
 
@@ -92,8 +96,8 @@ def upgrade():
             if granularity in duration_dict:
                 params["time_grain_sqla"] = duration_dict[granularity]
                 slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning("Could not update time_grain_sqla for slice", exc_info=True)
 
     session.commit()
     session.close()

@@ -382,7 +382,12 @@ class SecretsMigrator:
                         key=key,
                         engine=engine,
                     ).process_result_value(raw_value, self._dialect)
-                except Exception:  # noqa: BLE001, S112  # pylint: disable=broad-except
+                except Exception:  # noqa: BLE001  # pylint: disable=broad-except
+                    logger.debug(
+                        "Value did not decrypt under engine %s; trying next key/engine",
+                        engine,
+                        exc_info=True,
+                    )
                     continue
                 return True
         return False
@@ -461,10 +466,11 @@ class SecretsMigrator:
             if not provably_authenticated:
                 try:
                     target_type.process_result_value(raw_value, self._dialect)
-                except (  # noqa: S110  # pylint: disable=broad-except
-                    Exception  # noqa: BLE001
-                ):
-                    pass
+                except Exception:  # noqa: BLE001  # pylint: disable=broad-except
+                    logger.debug(
+                        "Value not readable under target type; will re-encrypt",
+                        exc_info=True,
+                    )
                 else:
                     stats.skipped += 1
                     continue

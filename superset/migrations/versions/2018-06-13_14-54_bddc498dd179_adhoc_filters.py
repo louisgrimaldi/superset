@@ -27,6 +27,8 @@ revision = "bddc498dd179"
 down_revision = "80a67c5192fa"
 
 
+import logging  # noqa: E402
+
 from alembic import op  # noqa: E402
 from sqlalchemy import Column, Integer, Text  # noqa: E402
 from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
@@ -37,6 +39,8 @@ from superset.utils.core import (  # noqa: E402
     convert_legacy_filters_into_adhoc,
     split_adhoc_filters_into_base_filters,
 )
+
+logger = logging.getLogger("alembic.env")
 
 Base = declarative_base()
 
@@ -57,8 +61,8 @@ def upgrade():
             params = json.loads(slc.params)
             convert_legacy_filters_into_adhoc(params)
             slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning("Could not convert legacy filters to adhoc", exc_info=True)
 
     session.commit()
     session.close()
@@ -77,8 +81,10 @@ def downgrade():
                 del params["adhoc_filters"]
 
             slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning(
+                "Could not split adhoc filters into base filters", exc_info=True
+            )
 
     session.commit()
     session.close()

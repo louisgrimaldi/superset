@@ -26,8 +26,12 @@ Create Date: 2020-02-20 08:52:22.877902
 revision = "72428d1ea401"
 down_revision = "0a6f12f60c73"
 
+import logging  # noqa: E402
+
 import sqlalchemy as sa  # noqa: E402
 from alembic import op  # noqa: E402
+
+logger = logging.getLogger("alembic.env")
 
 
 def upgrade():
@@ -40,5 +44,7 @@ def downgrade():
     try:
         # sqlite doesn't like dropping the columns
         op.drop_column("query", "tmp_schema_name")
-    except Exception:  # noqa: S110
-        pass
+    except Exception:
+        logger.warning(
+            "Could not drop tmp_schema_name column (e.g. on sqlite)", exc_info=True
+        )

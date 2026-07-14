@@ -201,9 +201,12 @@ def register_password_change_enforcement(app: Any) -> None:
         for endpoint in candidates:
             try:
                 return redirect(url_for(endpoint))
-            except Exception:  # noqa: BLE001, S112  # pylint: disable=broad-except
+            except Exception:  # noqa: BLE001  # pylint: disable=broad-except
                 # Try the next exempt fallback; a failed url_for resolution here
-                # is expected/benign and not worth logging per attempt.
+                # is expected/benign, so log at debug only.
+                logger.debug(
+                    "Could not resolve logout endpoint %s", endpoint, exc_info=True
+                )
                 continue
         return (
             __("You must change your password before continuing."),

@@ -27,12 +27,16 @@ revision = "80a67c5192fa"
 down_revision = "afb7730f6a9c"
 
 
+import logging  # noqa: E402
+
 from alembic import op  # noqa: E402
 from sqlalchemy import Column, Integer, String, Text  # noqa: E402
 from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
 
 from superset import db  # noqa: E402
 from superset.utils import json  # noqa: E402
+
+logger = logging.getLogger("alembic.env")
 
 Base = declarative_base()
 
@@ -59,8 +63,10 @@ def upgrade():
 
                 del params["metrics"]
                 slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning(
+                "Could not migrate pie chart to single metric", exc_info=True
+            )
 
     session.commit()
     session.close()
@@ -80,8 +86,8 @@ def downgrade():
 
                 del params["metric"]
                 slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning("Could not revert pie chart single metric", exc_info=True)
 
     session.commit()
     session.close()
