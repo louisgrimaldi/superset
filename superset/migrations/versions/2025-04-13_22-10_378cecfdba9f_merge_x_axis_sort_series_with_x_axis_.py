@@ -26,6 +26,8 @@ Create Date: 2025-04-13 22:10:10.836273
 revision = "378cecfdba9f"
 down_revision = "32bf93dfe2a4"
 
+import logging  # noqa: E402
+
 from alembic import op  # noqa: E402
 from sqlalchemy import Column, Integer, String, Text  # noqa: E402
 from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
@@ -33,6 +35,8 @@ from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
 from superset import db  # noqa: E402
 from superset.migrations.shared.utils import paginated_update  # noqa: E402
 from superset.utils import json  # noqa: E402
+
+logger = logging.getLogger("alembic.env")
 
 Base = declarative_base()
 
@@ -78,8 +82,10 @@ def upgrade():
                 params["x_axis_sort_asc"] = params.pop("x_axis_sort_series_ascending")
 
             slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning(
+                "Could not merge x_axis_sort_series into x_axis_sort", exc_info=True
+            )
 
     session.commit()
     session.close()
@@ -107,8 +113,10 @@ def downgrade():
                 params["x_axis_sort_series_ascending"] = params.pop("x_axis_sort_asc")
 
             slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning(
+                "Could not split x_axis_sort into x_axis_sort_series", exc_info=True
+            )
 
     session.commit()
     session.close()

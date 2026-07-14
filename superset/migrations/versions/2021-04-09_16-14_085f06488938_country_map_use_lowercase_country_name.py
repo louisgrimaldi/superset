@@ -22,6 +22,8 @@ Create Date: 2021-04-09 16:14:19.040884
 
 """
 
+import logging
+
 from alembic import op
 from sqlalchemy import Column, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -32,6 +34,8 @@ from superset.utils import json
 # revision identifiers, used by Alembic.
 revision = "085f06488938"
 down_revision = "134cea61c5e7"
+
+logger = logging.getLogger("alembic.env")
 
 Base = declarative_base()
 
@@ -57,8 +61,8 @@ def upgrade():
             if params.get("select_country"):
                 params["select_country"] = params["select_country"].lower()
                 slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning("Could not lowercase country name for slice", exc_info=True)
 
     session.commit()
     session.close()
@@ -78,8 +82,10 @@ def downgrade():
                 country = params["select_country"].lower()
                 params["select_country"] = country[0].upper() + country[1:]
                 slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning(
+                "Could not restore country name case for slice", exc_info=True
+            )
 
     session.commit()
     session.close()

@@ -27,6 +27,8 @@ revision = "be1b217cd8cd"
 down_revision = "17fcea065655"
 
 
+import logging  # noqa: E402
+
 from alembic import op  # noqa: E402
 from sqlalchemy import Column, Integer, String, Text  # noqa: E402
 from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
@@ -34,6 +36,8 @@ from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
 from superset import db  # noqa: E402
 from superset.migrations.shared.utils import paginated_update  # noqa: E402
 from superset.utils import json  # noqa: E402
+
+logger = logging.getLogger("alembic.env")
 
 Base = declarative_base()
 
@@ -62,8 +66,8 @@ def upgrade():
 
                 del params["metrics"]
                 slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning("Could not migrate pop_kpi to single metric", exc_info=True)
 
     session.commit()
     session.close()
@@ -85,8 +89,8 @@ def downgrade():
 
                 del params["metric"]
                 slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning("Could not revert pop_kpi single metric", exc_info=True)
 
     session.commit()
     session.close()

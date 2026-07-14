@@ -26,12 +26,16 @@ Create Date: 2018-06-04 11:12:59.878742
 revision = "c5756bec8b47"
 down_revision = "e502db2af7be"
 
+import logging  # noqa: E402
+
 from alembic import op  # noqa: E402
 from sqlalchemy import Column, Integer, Text  # noqa: E402
 from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
 
 from superset import db  # noqa: E402
 from superset.utils import json  # noqa: E402
+
+logger = logging.getLogger("alembic.env")
 
 Base = declarative_base()
 
@@ -54,8 +58,8 @@ def upgrade():
             if params.get("time_grain_sqla") == "Time Column":
                 params["time_grain_sqla"] = None
                 slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning("Could not update time_grain_sqla for slice", exc_info=True)
 
     session.commit()
     session.close()
@@ -72,8 +76,8 @@ def downgrade():
             if params.get("time_grain_sqla") is None:
                 params["time_grain_sqla"] = "Time Column"
                 slc.params = json.dumps(params, sort_keys=True)
-        except Exception:  # noqa: S110
-            pass
+        except Exception:
+            logger.warning("Could not revert time_grain_sqla for slice", exc_info=True)
 
     session.commit()
     session.close()

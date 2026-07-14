@@ -22,12 +22,16 @@ Create Date: 2016-03-13 21:30:24.833107
 
 """
 
+import logging
+
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "18e88e1cc004"
 down_revision = "430039611635"
+
+logger = logging.getLogger("alembic.env")
 
 
 def upgrade():
@@ -97,8 +101,8 @@ def upgrade():
         )
         op.alter_column("url", "changed_on", existing_type=sa.DATETIME(), nullable=True)
         op.alter_column("url", "created_on", existing_type=sa.DATETIME(), nullable=True)
-    except Exception:  # noqa: S110
-        pass
+    except Exception:
+        logger.warning("Failed to make audit columns nullable; skipping", exc_info=True)
 
 
 def downgrade():

@@ -26,8 +26,12 @@ Create Date: 2016-09-12 23:33:14.789632
 revision = "4500485bde7d"
 down_revision = "41f6a59a61f2"
 
+import logging  # noqa: E402
+
 import sqlalchemy as sa  # noqa: E402
 from alembic import op  # noqa: E402
+
+logger = logging.getLogger("alembic.env")
 
 
 def upgrade():
@@ -39,5 +43,7 @@ def downgrade():
     try:
         op.drop_column("dbs", "allow_run_sync")
         op.drop_column("dbs", "allow_run_async")
-    except Exception:  # noqa: S110
-        pass
+    except Exception:
+        logger.warning(
+            "Failed to drop allow_run_sync/async columns; skipping", exc_info=True
+        )

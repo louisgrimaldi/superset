@@ -22,11 +22,15 @@ Create Date: 2016-04-15 08:31:26.249591
 
 """
 
+import logging
+
 from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "b4456560d4f3"
 down_revision = "bb51420eaf83"
+
+logger = logging.getLogger("alembic.env")
 
 
 def upgrade():
@@ -36,13 +40,19 @@ def upgrade():
         op.create_unique_constraint(
             "_customer_location_uc", "tables", ["database_id", "schema", "table_name"]
         )
-    except Exception:  # noqa: S110
-        pass
+    except Exception:
+        logger.warning(
+            "Could not change table unique constraint (e.g. on sqlite); skipping",
+            exc_info=True,
+        )
 
 
 def downgrade():
     try:
         # Trying since sqlite doesn't like constraints
         op.drop_constraint("_customer_location_uc", "tables", type_="unique")
-    except Exception:  # noqa: S110
-        pass
+    except Exception:
+        logger.warning(
+            "Could not drop table unique constraint (e.g. on sqlite); skipping",
+            exc_info=True,
+        )
