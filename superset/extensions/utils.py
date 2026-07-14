@@ -61,7 +61,15 @@ class InMemoryLoader(importlib.abc.Loader):
             module.__path__ = []
         # Compile with filename for proper tracebacks
         code = compile(self.source, self.origin, "exec")
-        exec(code, module.__dict__)  # noqa: S102
+        # Executing the extension's backend module is the core purpose of this
+        # loader. Extensions are an operator/Admin deployment-time decision
+        # (loaded only from the operator-controlled LOCAL_EXTENSIONS and
+        # EXTENSIONS_PATH config), which SECURITY.md places within the
+        # operator's trust boundary, and they pass the supply-chain guardrails
+        # (EXTENSION_DENYLIST, EXTENSION_VERSION_POLICY, check_is_safe_zip) that
+        # run before load. There is no way to run their Python without exec, so
+        # this is a reviewed and accepted use.
+        exec(code, module.__dict__)  # noqa: S102  # nosec B102
 
 
 class InMemoryFinder(importlib.abc.MetaPathFinder):
