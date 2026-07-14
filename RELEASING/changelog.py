@@ -16,6 +16,7 @@
 import csv as lib_csv
 import os
 import re
+import subprocess
 import sys
 from collections.abc import Iterator
 from dataclasses import dataclass
@@ -278,7 +279,12 @@ class GitLogs:
         return match.group(1)
 
     def _git_checkout(self, git_ref: str) -> None:
-        os.popen(f"git checkout {git_ref}").read()  # noqa: S605
+        subprocess.run(  # noqa: S603
+            ["git", "checkout", git_ref],  # noqa: S607
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         current_head = self._git_get_current_head()
         if current_head != git_ref:
             print(f"Could not checkout {git_ref}")

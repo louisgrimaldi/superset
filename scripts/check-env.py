@@ -33,7 +33,7 @@ class Requirement:
         ideal_range: Tuple[Version, Version],
         supported_range: Tuple[Version, Version],
         req_type: str,
-        command: str,
+        command: list[str],
         version_post_process: Optional[Callable[[str], str]] = None,
     ):
         self.name = name
@@ -47,11 +47,13 @@ class Requirement:
 
     def get_version(self) -> Optional[str]:
         try:
-            version = subprocess.check_output(self.command, shell=True).decode().strip()  # noqa: S602
+            version = (
+                subprocess.check_output(self.command).decode().strip()  # noqa: S603
+            )
             if self.version_post_process:
                 version = self.version_post_process(version)
             return version.split()[-1]
-        except subprocess.CalledProcessError:
+        except (OSError, subprocess.CalledProcessError):
             return None
 
     def check_version(self) -> str:
@@ -136,28 +138,28 @@ def main(docker: bool, frontend: bool, backend: bool) -> None:  # noqa: C901
             (Version("3.10.0"), Version("3.10.999")),
             (Version("3.9.0"), Version("3.11.999")),
             "backend",
-            "python --version",
+            ["python", "--version"],
         ),
         Requirement(
             "npm",
             (Version("10.0.0"), Version("999.999.999")),
             (Version("10.0.0"), Version("999.999.999")),
             "frontend",
-            "npm -v",
+            ["npm", "-v"],
         ),
         Requirement(
             "node",
             (Version("20.0.0"), Version("20.999.999")),
             (Version("20.0.0"), Version("20.999.999")),
             "frontend",
-            "node -v",
+            ["node", "-v"],
         ),
         Requirement(
             "docker",
             (Version("20.10.0"), Version("999.999.999")),
             (Version("19.0.0"), Version("999.999.999")),
             "docker",
-            "docker --version",
+            ["docker", "--version"],
             lambda v: v.split(",")[0],
         ),
         Requirement(
@@ -165,14 +167,14 @@ def main(docker: bool, frontend: bool, backend: bool) -> None:  # noqa: C901
             (Version("2.28.0"), Version("999.999.999")),
             (Version("1.29.0"), Version("999.999.999")),
             "docker",
-            "docker-compose --version",
+            ["docker-compose", "--version"],
         ),
         Requirement(
             "git",
             (Version("2.30.0"), Version("999.999.999")),
             (Version("2.20.0"), Version("999.999.999")),
             "backend",
-            "git --version",
+            ["git", "--version"],
         ),
     ]
 
