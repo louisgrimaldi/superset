@@ -1266,7 +1266,7 @@ class PrestoEngineSpec(PrestoBaseEngineSpec):
 
                         # add any necessary rows
                         missing = extra_rows - current_unnested_rows
-                        for _ in range(missing):
+                        for _unused in range(missing):
                             data.insert(i + current_unnested_rows + 1, {})
                             unnested_rows[i] += 1
 

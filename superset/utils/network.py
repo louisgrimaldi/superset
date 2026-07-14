@@ -86,7 +86,7 @@ def is_port_open(host: str, port: int) -> bool:
             s.connect(sockaddr)
             s.shutdown(socket.SHUT_RDWR)
             return True
-        except OSError as _:
+        except OSError:
             continue
         finally:
             s.close()

@@ -27,11 +27,11 @@ from sqlalchemy.orm import Session  # noqa: F401
 from superset import db
 from superset.commands.base import BaseCommand
 from superset.commands.exceptions import CommandException, CommandInvalidError
-from superset.commands.importers.v1.utils import (
+from superset.commands.importers.v1.utils import (  # noqa: F401
     load_configs,
     load_metadata,
-    load_yaml,  # noqa: F401
-    METADATA_FILE_NAME,  # noqa: F401
+    load_yaml,
+    METADATA_FILE_NAME,
     validate_metadata_type,
 )
 from superset.daos.base import BaseDAO

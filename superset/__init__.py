@@ -29,16 +29,16 @@ from werkzeug.local import LocalProxy
 flask_appbuilder.Model.__allow_unmapped__ = True
 
 from superset.app import create_app  # noqa: E402, F401
-from superset.extensions import (  # noqa: E402
-    appbuilder,  # noqa: F401
+from superset.extensions import (  # noqa: E402, F401
+    appbuilder,
     cache_manager,
-    db,  # noqa: F401
-    event_logger,  # noqa: F401
+    db,
+    event_logger,
     feature_flag_manager,
     manifest_processor,
     results_backend_manager,
-    security_manager,  # noqa: F401
-    talisman,  # noqa: F401
+    security_manager,
+    talisman,
 )
 from superset.security import SupersetSecurityManager  # noqa: E402, F401
 
