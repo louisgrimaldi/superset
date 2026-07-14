@@ -629,7 +629,9 @@ class AuditMixinNullable(AuditMixin):
 
     @renders("changed_on")
     def changed_on_(self) -> Markup:
-        return Markup(f'<span class="no-wrap">{self.changed_on}</span>')  # noqa: S704
+        return Markup('<span class="no-wrap">{changed_on}</span>').format(
+            changed_on=self.changed_on
+        )
 
     @renders("changed_on")
     def changed_on_delta_humanized(self) -> str:
@@ -673,7 +675,9 @@ class AuditMixinNullable(AuditMixin):
 
     @renders("changed_on")
     def modified(self) -> Markup:
-        return Markup(f'<span class="no-wrap">{self.changed_on_humanized}</span>')  # noqa: S704
+        return Markup('<span class="no-wrap">{changed_on}</span>').format(
+            changed_on=self.changed_on_humanized
+        )
 
 
 # Shared sentinel for "no bypass requested" — returned by
