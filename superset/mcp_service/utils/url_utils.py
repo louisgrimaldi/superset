@@ -26,8 +26,11 @@ from flask import current_app
 
 logger = logging.getLogger(__name__)
 
-# Hostnames that indicate a development/local environment
-LOCAL_HOSTNAMES = {"localhost", "127.0.0.1", "0.0.0.0"}  # noqa: S104
+# Hostnames that indicate a development/local environment.
+# The wildcard address 0.0.0.0 is included only for URL-hostname comparison in
+# _is_local_url(); this is not a socket bind, so bandit B104 does not apply.
+_WILDCARD_HOST = "0.0.0.0"  # noqa: S104  # nosec B104
+LOCAL_HOSTNAMES = {"localhost", "127.0.0.1", _WILDCARD_HOST}
 
 
 def _is_local_url(url: str) -> bool:
